@@ -1,0 +1,379 @@
+{
+	"info": {
+		"_postman_id": "07ba5474-418a-4526-ba32-1bc51084ff02",
+		"name": "Api Test Jira Cloud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30940444"
+	},
+	"item": [
+		{
+			"name": "Get Projects",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resp = pm.response.json()\r",
+							"let projectdetails = resp.values\r",
+							"console.log(projectdetails)\r",
+							"const proctName = projectdetails.map((value)=>value.name)\r",
+							"pm.collectionVariables.set(\"projectId\",projectdetails[proctName.indexOf('My Scrum Project')].id)\r",
+							"pm.collectionVariables.set(\"projectKey\",projectdetails[proctName.indexOf('My Scrum Project')].key)\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/rest/api/3/project/search",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"rest",
+						"api",
+						"3",
+						"project",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resp = pm.response.json()\r",
+							"pm.collectionVariables.set(\"UserId\",resp[0].accountId)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{api_token}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "rushikeshjethure@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://rushikeshjethure.atlassian.net/rest/api/3/user/assignable/multiProjectSearch?projectKeys={{projectKey}}",
+					"protocol": "https",
+					"host": [
+						"rushikeshjethure",
+						"atlassian",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"3",
+						"user",
+						"assignable",
+						"multiProjectSearch"
+					],
+					"query": [
+						{
+							"key": "projectKeys",
+							"value": "{{projectKey}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get IssueTypes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resp = pm.response.json()\r",
+							"console.log(resp)\r",
+							"const isuetypes = resp.map((value)=> value.name)\r",
+							"console.log(isuetypes)\r",
+							"pm.collectionVariables.set(\"issueType\",resp[isuetypes.indexOf(pm.variables.get(\"issueTyp\"))].id)\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{api_token}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "rushikeshjethure@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://rushikeshjethure.atlassian.net/rest/api/3/issuetype/project?projectId={{projectId}}",
+					"protocol": "https",
+					"host": [
+						"rushikeshjethure",
+						"atlassian",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"3",
+						"issuetype",
+						"project"
+					],
+					"query": [
+						{
+							"key": "projectId",
+							"value": "{{projectId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Issue",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//var title = pm.collectionVariables.replaceIn('{{$randomPhrase}}')\r",
+							"pm.collectionVariables.set(\"IssueSummary\",pm.variables.get(\"Summary\"))"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"const resp = pm.response.json()\r",
+							"pm.collectionVariables.set(\"IssueId\",resp.id)\r",
+							"pm.collectionVariables.set(\"IssueKey\",resp.key)\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{api_token}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "rushikeshjethure@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fields\": {\r\n    \"issuetype\": {\r\n      \"id\": \"{{issueType}}\"\r\n    },\r\n    \"project\": {\r\n      \"id\": \"{{projectId}}\"\r\n    },\r\n    \"reporter\": {\r\n      \"id\": \"{{UserId}}\"\r\n    },\r\n    \"summary\": \"{{IssueSummary}}\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rushikeshjethure.atlassian.net/rest/api/3/issue",
+					"protocol": "https",
+					"host": [
+						"rushikeshjethure",
+						"atlassian",
+						"net"
+					],
+					"path": [
+						"rest",
+						"api",
+						"3",
+						"issue"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Your test name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.fields.summary).to.eql(pm.collectionVariables.get(\"IssueSummary\"));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ATATT3xFfGF03RZMmkt18yo0rkWt1TojnFOKkGFpBQNQ4ZQP9eQ31deThQNPF72o3yydNUhmuVpFy0nfbHzC3mv28GD7DTxcxra0DfqAHrfe2HicC5UKGM_Mt8X36klPV8aFlcR3m4duHvCJidu_qVyUiBR8lZMeGl1DPVh4WmiMeVpYeLgmvcA=ED9FD087",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "rushikeshjethure@gmail.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{hostname}}/rest/api/3/issue/{{IssueKey}}",
+					"host": [
+						"{{hostname}}"
+					],
+					"path": [
+						"rest",
+						"api",
+						"3",
+						"issue",
+						"{{IssueKey}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "projectId",
+			"value": ""
+		},
+		{
+			"key": "projectKey",
+			"value": ""
+		},
+		{
+			"key": "UserId",
+			"value": ""
+		},
+		{
+			"key": "issueType",
+			"value": ""
+		},
+		{
+			"key": "IssueSummary",
+			"value": ""
+		},
+		{
+			"key": "IssueId",
+			"value": ""
+		},
+		{
+			"key": "IssueKey",
+			"value": ""
+		}
+	]
+}
